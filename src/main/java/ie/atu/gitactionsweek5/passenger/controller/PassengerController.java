@@ -11,12 +11,13 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping
-public class PassengerController{
+public class PassengerController {
 
     private final PassengerService service;
 
-
-    public PassengerController(PassengerService service) {this.service = service;}
+    public PassengerController(PassengerService service) {
+        this.service = service;
+    }
 
     @GetMapping("/{id}")
     public ResponseEntity<Passenger> getOne(@PathVariable String id) {
@@ -24,12 +25,10 @@ public class PassengerController{
 
         if (maybe.isPresent()) {
             return ResponseEntity.ok(maybe.get());
-        }
-        else  {
+        } else {
             return ResponseEntity.notFound().build();
         }
     }
-
 
     @PostMapping
     public ResponseEntity<Passenger> create(@RequestBody Passenger p) {
@@ -37,6 +36,19 @@ public class PassengerController{
         return ResponseEntity
                 .created(URI.create("/api/passengers/" + created.getPassengerId()))
                 .body(created);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<Passenger> update(@RequestBody Passenger p) {
+        Optional<Passenger> maybe = service.findById(p.getPassengerId());
+        if (maybe.isPresent()) {
+            Passenger updated = maybe.get();
+            updated.setName(p.getName());
+            updated.setEmail(p.getEmail());
+            return ResponseEntity.ok(updated);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
 
